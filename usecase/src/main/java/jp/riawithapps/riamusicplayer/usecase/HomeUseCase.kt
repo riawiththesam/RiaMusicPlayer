@@ -4,8 +4,8 @@ interface HomeUseCase {
     fun test(): String
 }
 
-class HomeInteractor: HomeUseCase {
+class HomeInteractor(private val repo: TestRepository): HomeUseCase {
     override fun test(): String {
-        return "test"
+        return repo.test()
     }
 }
