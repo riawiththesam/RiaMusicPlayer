@@ -10,3 +10,4 @@ rootProject.name = "RiaMusicPlayer"
 include ':app'
 include ':usecase'
 include ':data'
+include ':ui'
