@@ -1,10 +1,19 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
+    id 'kotlin-kapt'
+}
+
+kapt {
+    correctErrorTypes = true
 }
 
 android {
     compileSdk 31
+
+    buildFeatures {
+        viewBinding true
+    }
 
     defaultConfig {
         minSdk 23
@@ -43,6 +52,11 @@ dependencies {
 
     def lifeCycleVersion = "2.4.0-rc01"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifeCycleVersion"
+
+    def epoxyVersion = "4.6.4"
+    implementation "com.airbnb.android:epoxy:$epoxyVersion"
+    // Add the annotation processor if you are using Epoxy's annotations (recommended)
+    kapt "com.airbnb.android:epoxy-processor:$epoxyVersion"
 
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
 
