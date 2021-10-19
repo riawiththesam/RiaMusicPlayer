@@ -37,6 +37,10 @@ dependencies {
     implementation "com.google.android.material:material:$materialDesignVersion"
     implementation "io.insert-koin:koin-android:$koinVersion"
 
+    def navigationVersion = "2.3.5"
+    implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
+    implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
+
     testImplementation "junit:junit:${jUnitVersion}"
     androidTestImplementation "androidx.test.ext:junit:${androidJUnitVersion}"
     androidTestImplementation "androidx.test.espresso:espresso-core:${espressoVersion}"
