@@ -38,6 +38,7 @@ dependencies {
 
     implementation "androidx.core:core-ktx:$coreKtxVersion"
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
+    implementation "io.insert-koin:koin-android:$koinVersion"
 
     implementation "com.google.android.material:material:$materialDesignVersion"
 
