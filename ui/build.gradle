@@ -41,6 +41,9 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
 
+    def lifeCycleVersion = "2.3.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifeCycleVersion"
+
     testImplementation "junit:junit:${jUnitVersion}"
     androidTestImplementation "androidx.test.ext:junit:${androidJUnitVersion}"
     androidTestImplementation "androidx.test.espresso:espresso-core:${espressoVersion}"
