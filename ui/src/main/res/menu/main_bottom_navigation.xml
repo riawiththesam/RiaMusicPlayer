@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_folder"
+        android:icon="@drawable/ic_outline_folder_24"
+        android:title="@string/main_bottom_navigation_music" />
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_outline_search_24"
+        android:title="@string/main_bottom_navigation_search" />
+    <item
+        android:id="@+id/action_library"
+        android:icon="@drawable/ic_outline_library_music_24"
+        android:title="@string/main_bottom_navigation_library" />
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_outline_settings_24"
+        android:title="@string/main_bottom_navigation_settings" />
+</menu>

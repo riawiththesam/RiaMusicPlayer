@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="main_bottom_navigation_music">音楽</string>
+    <string name="main_bottom_navigation_search">検索</string>
+    <string name="main_bottom_navigation_library">ライブラリ</string>
+    <string name="main_bottom_navigation_settings">設定</string>
+</resources>
