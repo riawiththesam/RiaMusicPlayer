@@ -3,15 +3,14 @@ package jp.riawithapps.riamusicplayer.ui
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import jp.riawithapps.riamusicplayer.usecase.HomeUseCase
-import org.koin.android.ext.android.get
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
+    private val mainViewModel by viewModel<MainViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        val usecase = get<HomeUseCase>()
-        Log.d("test", usecase.test())
+        Log.d("test", mainViewModel.test())
     }
 }

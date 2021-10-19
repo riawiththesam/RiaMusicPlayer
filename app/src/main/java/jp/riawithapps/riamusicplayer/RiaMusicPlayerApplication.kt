@@ -16,6 +16,7 @@ class RiaMusicPlayerApplication : Application() {
             androidContext(applicationContext)
             modules(createUseCaseModule())
             modules(createDataModule())
+            modules(createViewModelModule())
         }
     }
 }
