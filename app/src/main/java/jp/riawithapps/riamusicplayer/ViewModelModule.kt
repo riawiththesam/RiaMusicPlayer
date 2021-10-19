@@ -7,5 +7,5 @@ import org.koin.dsl.module
 
 fun createViewModelModule() = module {
     viewModel { MainViewModel(get()) }
-    viewModel { MusicDirectoryListViewModel() }
+    viewModel { MusicDirectoryListViewModel(get()) }
 }
