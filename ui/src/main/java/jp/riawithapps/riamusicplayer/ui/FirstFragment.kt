@@ -7,7 +7,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import jp.riawithapps.riamusicplayer.ui.databinding.FragmentFirstBinding
-import jp.riawithapps.riamusicplayer.ui.musicfilelist.MusicFileListFragment
+import jp.riawithapps.riamusicplayer.ui.musicselect.MusicSelectFragment
 import jp.riawithapps.riamusicplayer.ui.search.SearchFragment
 
 class FirstFragment : Fragment(R.layout.fragment_first) {
@@ -15,7 +15,7 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
         super.onViewCreated(view, savedInstanceState)
 
         val list = listOf(
-            MusicFileListFragment(),
+            MusicSelectFragment(),
             SearchFragment(),
         )
         val adapter = HomeViewPagerAdapter(list, childFragmentManager, lifecycle)
@@ -26,7 +26,7 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
 
             binding.navigation.setOnItemSelectedListener { item ->
                 when (item.itemId) {
-                    R.id.action_folder -> binding.viewpager.setCurrentItem(0, false)
+                    R.id.action_select -> binding.viewpager.setCurrentItem(0, false)
                     R.id.action_search -> binding.viewpager.setCurrentItem(1, false)
                     R.id.action_library -> binding.viewpager.setCurrentItem(0, false)
                     R.id.action_settings -> binding.viewpager.setCurrentItem(1, false)
