@@ -46,6 +46,9 @@ dependencies {
     implementation "com.google.android.material:material:$materialDesignVersion"
     implementation "io.insert-koin:koin-android:$koinVersion"
 
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+
     def navigationVersion = "2.3.5"
     implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
