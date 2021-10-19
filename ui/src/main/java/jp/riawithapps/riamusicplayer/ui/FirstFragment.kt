@@ -20,8 +20,19 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
         )
         val adapter = HomeViewPagerAdapter(list, childFragmentManager, lifecycle)
 
-        FragmentFirstBinding.bind(view).also {
-            it.viewpager.adapter = adapter
+        FragmentFirstBinding.bind(view).also { binding ->
+            binding.viewpager.adapter = adapter
+            binding.viewpager.isUserInputEnabled = false
+
+            binding.navigation.setOnItemSelectedListener { item ->
+                when (item.itemId) {
+                    R.id.action_folder -> binding.viewpager.setCurrentItem(0, false)
+                    R.id.action_search -> binding.viewpager.setCurrentItem(1, false)
+                    R.id.action_library -> binding.viewpager.setCurrentItem(0, false)
+                    R.id.action_settings -> binding.viewpager.setCurrentItem(1, false)
+                }
+                true
+            }
         }
     }
 }
