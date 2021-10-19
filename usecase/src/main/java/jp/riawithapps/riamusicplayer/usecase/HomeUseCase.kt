@@ -1,4 +1,11 @@
 package jp.riawithapps.riamusicplayer.usecase
 
-class HomeUseCase {
+interface HomeUseCase {
+    fun test(): String
+}
+
+class HomeInteractor: HomeUseCase {
+    override fun test(): String {
+        return "test"
+    }
 }
