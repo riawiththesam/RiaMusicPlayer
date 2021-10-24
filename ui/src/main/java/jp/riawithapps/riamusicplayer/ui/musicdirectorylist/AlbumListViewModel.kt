@@ -18,12 +18,12 @@ class MusicDirectoryListViewModel(
     private val _musicList = MutableStateFlow<List<MusicFile>>(emptyList())
     val musicList: StateFlow<List<MusicFile>> = _musicList
 
-    private val _event = MutableSharedFlow<MusicDirectoryListEvent>()
-    val event: SharedFlow<MusicDirectoryListEvent> = _event
+    private val _event = MutableSharedFlow<AlbumListEvent>()
+    val event: SharedFlow<AlbumListEvent> = _event
 
     fun onClickScan() {
         scope.launch {
-            _event.emit(MusicDirectoryListEvent.RequestPermission)
+            _event.emit(AlbumListEvent.RequestPermission)
         }
     }
 
@@ -34,6 +34,6 @@ class MusicDirectoryListViewModel(
     }
 }
 
-sealed class MusicDirectoryListEvent {
-    object RequestPermission : MusicDirectoryListEvent()
+sealed class AlbumListEvent {
+    object RequestPermission : AlbumListEvent()
 }
