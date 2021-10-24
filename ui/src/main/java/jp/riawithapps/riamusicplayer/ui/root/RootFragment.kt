@@ -44,7 +44,7 @@ class RootFragment : Fragment(R.layout.fragment_root) {
         rootViewModel.event.repeatCollectOnStarted(this) { event ->
             when (event) {
                 is RootEvent.NavigateToPlayer -> {
-                    findNavController().navigate(RootFragmentDirections.actionToPlayer())
+                    findNavController().navigate(RootFragmentDirections.actionToPlayer(event.id))
                 }
             }
         }

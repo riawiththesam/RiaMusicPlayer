@@ -3,6 +3,7 @@ package jp.riawithapps.riamusicplayer.ui.root
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import jp.riawithapps.riamusicplayer.ui.util.emit
+import jp.riawithapps.riamusicplayer.usecase.music.MusicId
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -15,11 +16,11 @@ class RootViewModel : ViewModel() {
     private val _event = MutableSharedFlow<RootEvent>()
     val event: SharedFlow<RootEvent> = _event
 
-    fun navigateToPlayer() {
-        _event.emit(scope, RootEvent.NavigateToPlayer)
+    fun navigateToPlayer(id: MusicId) {
+        _event.emit(scope, RootEvent.NavigateToPlayer(id))
     }
 }
 
 sealed class RootEvent {
-    object NavigateToPlayer : RootEvent()
+    class NavigateToPlayer(val id: MusicId) : RootEvent()
 }

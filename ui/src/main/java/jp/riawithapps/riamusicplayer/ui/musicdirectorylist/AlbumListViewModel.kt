@@ -18,8 +18,8 @@ class AlbumListViewModel(
     private val _event = MutableSharedFlow<AlbumListEvent>()
     val event: SharedFlow<AlbumListEvent> = _event
 
-    fun onClickItem() {
-        _event.emit(scope, AlbumListEvent.NavigateToPlayer)
+    fun onClickItem(item: MusicFile) {
+        _event.emit(scope, AlbumListEvent.NavigateToPlayer(item))
     }
 
     fun onClickScan() {
@@ -35,5 +35,5 @@ class AlbumListViewModel(
 
 sealed class AlbumListEvent {
     object RequestPermission : AlbumListEvent()
-    object NavigateToPlayer : AlbumListEvent()
+    class NavigateToPlayer(val music: MusicFile) : AlbumListEvent()
 }

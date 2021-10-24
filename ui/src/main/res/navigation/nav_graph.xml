@@ -20,5 +20,10 @@
         android:id="@+id/PlayerFragment"
         android:name="jp.riawithapps.riamusicplayer.ui.player.PlayerFragment"
         android:label="Player"
-        tools:layout="@layout/fragment_player" />
+        tools:layout="@layout/fragment_player">
+
+        <argument
+            android:name="id"
+            app:argType="jp.riawithapps.riamusicplayer.usecase.music.MusicId" />
+    </fragment>
 </navigation>

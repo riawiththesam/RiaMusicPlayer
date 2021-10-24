@@ -12,6 +12,7 @@ import jp.riawithapps.riamusicplayer.ui.R
 import jp.riawithapps.riamusicplayer.ui.databinding.FragmentMusicDirectoryListBinding
 import jp.riawithapps.riamusicplayer.ui.root.RootViewModel
 import jp.riawithapps.riamusicplayer.ui.util.repeatCollectOnStarted
+import jp.riawithapps.riamusicplayer.usecase.music.MusicId
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -34,12 +35,12 @@ class AlbumListFragment : Fragment(R.layout.fragment_music_directory_list) {
             binding.list.setController(controller)
         }
         viewModel.musicList.repeatCollectOnStarted(this) { list ->
-            controller.setData(list.map { it.title })
+            controller.setData(list)
         }
         viewModel.event.repeatCollectOnStarted(this) { event ->
             when (event) {
                 is AlbumListEvent.RequestPermission -> requestPermissions()
-                is AlbumListEvent.NavigateToPlayer -> navigateToPlayer()
+                is AlbumListEvent.NavigateToPlayer -> navigateToPlayer(event.music.id)
             }
         }
     }
@@ -52,8 +53,8 @@ class AlbumListFragment : Fragment(R.layout.fragment_music_directory_list) {
         }
     }
 
-    private fun navigateToPlayer() {
-        rootViewModel.navigateToPlayer()
+    private fun navigateToPlayer(id: MusicId) {
+        rootViewModel.navigateToPlayer(id)
     }
 
     private fun Context.hasReadPermission(): Boolean {
