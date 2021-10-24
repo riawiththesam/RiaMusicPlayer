@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.provider.MediaStore
 import android.webkit.MimeTypeMap
 import jp.riawithapps.riamusicplayer.usecase.music.MusicFile
+import jp.riawithapps.riamusicplayer.usecase.music.MusicId
 import jp.riawithapps.riamusicplayer.usecase.music.MusicRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -40,7 +41,7 @@ class MusicRepositoryImpl(
                     val album = it.getString(albumColumn)
                     val albumId = it.getLong(albumIdColumn)
                     val id = it.getLong(idColumn)
-                    list.add(MusicFile(title))
+                    list.add(MusicFile(MusicId(id), title))
                 }
             }
             MusicRepository.ScanResult(
