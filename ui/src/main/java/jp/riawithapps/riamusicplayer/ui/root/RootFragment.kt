@@ -1,4 +1,4 @@
-package jp.riawithapps.riamusicplayer.ui
+package jp.riawithapps.riamusicplayer.ui.root
 
 import android.os.Bundle
 import android.view.View
@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import jp.riawithapps.riamusicplayer.ui.R
 import jp.riawithapps.riamusicplayer.ui.databinding.FragmentRootBinding
 import jp.riawithapps.riamusicplayer.ui.musicselect.MusicSelectFragment
 import jp.riawithapps.riamusicplayer.ui.search.SearchFragment
