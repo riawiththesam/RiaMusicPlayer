@@ -15,7 +15,7 @@ class RiaMusicPlayerApplication : Application() {
         startKoin {
             androidContext(applicationContext)
             modules(createUseCaseModule())
-            modules(createDataModule())
+            modules(createDataModule(this@RiaMusicPlayerApplication))
             modules(createViewModelModule())
         }
     }
