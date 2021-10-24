@@ -9,7 +9,7 @@ import jp.riawithapps.riamusicplayer.ui.R
 import jp.riawithapps.riamusicplayer.ui.databinding.EpoxyMusicDirectoryBinding
 
 @EpoxyModelClass
-abstract class MusicDirectoryModel : EpoxyModelWithHolder<MusicDirectoryModel.Holder>() {
+abstract class AlbumModel : EpoxyModelWithHolder<AlbumModel.Holder>() {
     @EpoxyAttribute
     var title: String = ""
 

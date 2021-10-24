@@ -9,8 +9,8 @@ import jp.riawithapps.riamusicplayer.ui.R
 import jp.riawithapps.riamusicplayer.ui.databinding.EpoxyMusicDirectoryCommandBinding
 
 @EpoxyModelClass
-abstract class MusicDirectoryCommandModel
-    : EpoxyModelWithHolder<MusicDirectoryCommandModel.Holder>() {
+abstract class AlbumListCommandModel
+    : EpoxyModelWithHolder<AlbumListCommandModel.Holder>() {
     @EpoxyAttribute
     var title: String = ""
 

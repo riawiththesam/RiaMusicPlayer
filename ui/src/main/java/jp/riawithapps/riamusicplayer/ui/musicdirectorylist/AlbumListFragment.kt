@@ -13,7 +13,7 @@ import jp.riawithapps.riamusicplayer.ui.databinding.FragmentMusicDirectoryListBi
 import jp.riawithapps.riamusicplayer.ui.util.repeatCollectOnStarted
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MusicDirectoryListFragment : Fragment(R.layout.fragment_music_directory_list) {
+class AlbumListFragment : Fragment(R.layout.fragment_music_directory_list) {
     private val viewModel by viewModel<MusicDirectoryListViewModel>()
 
     private val permissionRequest = registerForActivityResult(
@@ -26,7 +26,7 @@ class MusicDirectoryListFragment : Fragment(R.layout.fragment_music_directory_li
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val controller = MusicDirectoryListController(viewModel)
+        val controller = AlbumListController(viewModel)
         FragmentMusicDirectoryListBinding.bind(view).also { binding ->
             binding.list.setController(controller)
         }
