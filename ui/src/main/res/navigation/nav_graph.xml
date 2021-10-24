@@ -7,7 +7,8 @@
 
     <fragment
         android:id="@+id/FirstFragment"
-        android:name="jp.riawithapps.riamusicplayer.ui.FirstFragment"
+        android:name="jp.riawithapps.riamusicplayer.ui.RootFragment"
         android:label="First"
-        tools:layout="@layout/fragment_first" />
+        tools:layout="@layout/fragment_root">
+    </fragment>
 </navigation>

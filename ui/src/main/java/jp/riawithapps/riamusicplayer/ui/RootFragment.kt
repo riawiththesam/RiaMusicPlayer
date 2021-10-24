@@ -6,11 +6,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import jp.riawithapps.riamusicplayer.ui.databinding.FragmentFirstBinding
+import jp.riawithapps.riamusicplayer.ui.databinding.FragmentRootBinding
 import jp.riawithapps.riamusicplayer.ui.musicselect.MusicSelectFragment
 import jp.riawithapps.riamusicplayer.ui.search.SearchFragment
 
-class FirstFragment : Fragment(R.layout.fragment_first) {
+class RootFragment : Fragment(R.layout.fragment_root) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -20,7 +20,7 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
         )
         val adapter = HomeViewPagerAdapter(list, childFragmentManager, lifecycle)
 
-        FragmentFirstBinding.bind(view).also { binding ->
+        FragmentRootBinding.bind(view).also { binding ->
             binding.viewpager.adapter = adapter
             binding.viewpager.isUserInputEnabled = false
 
