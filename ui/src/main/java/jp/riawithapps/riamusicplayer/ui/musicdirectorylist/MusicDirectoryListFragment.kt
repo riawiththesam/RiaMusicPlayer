@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -30,10 +29,9 @@ class MusicDirectoryListFragment : Fragment(R.layout.fragment_music_directory_li
         val controller = MusicDirectoryListController(viewModel)
         FragmentMusicDirectoryListBinding.bind(view).also { binding ->
             binding.list.setController(controller)
-            controller.setData(listOf("test1", "test2"))
         }
-        viewModel.directoryList.repeatCollectOnStarted(this) {
-            Log.d("test", "directoryList $it")
+        viewModel.musicList.repeatCollectOnStarted(this) { list ->
+            controller.setData(list.map { it.title })
         }
         viewModel.event.repeatCollectOnStarted(this) {
             if (context?.hasReadPermission() == true) {

@@ -15,8 +15,8 @@ class MusicDirectoryListViewModel(
     private val handler = CoroutineExceptionHandler { _, e -> e.printStackTrace() }
     private val scope = viewModelScope + handler
 
-    private val _directoryList = MutableStateFlow<List<MusicFile>>(emptyList())
-    val directoryList: StateFlow<List<MusicFile>> = _directoryList
+    private val _musicList = MutableStateFlow<List<MusicFile>>(emptyList())
+    val musicList: StateFlow<List<MusicFile>> = _musicList
 
     private val _event = MutableSharedFlow<MusicDirectoryListEvent>()
     val event: SharedFlow<MusicDirectoryListEvent> = _event
@@ -29,7 +29,7 @@ class MusicDirectoryListViewModel(
 
     fun doScan() {
         musicDirectoryListUseCase.scan()
-            .onEach { _directoryList.value = it.list }
+            .onEach { _musicList.value = it.list }
             .launchIn(scope)
     }
 }
