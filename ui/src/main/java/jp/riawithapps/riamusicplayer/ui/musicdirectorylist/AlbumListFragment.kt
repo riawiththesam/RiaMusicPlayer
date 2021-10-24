@@ -10,11 +10,14 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import jp.riawithapps.riamusicplayer.ui.R
 import jp.riawithapps.riamusicplayer.ui.databinding.FragmentMusicDirectoryListBinding
+import jp.riawithapps.riamusicplayer.ui.root.RootViewModel
 import jp.riawithapps.riamusicplayer.ui.util.repeatCollectOnStarted
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AlbumListFragment : Fragment(R.layout.fragment_music_directory_list) {
-    private val viewModel by viewModel<MusicDirectoryListViewModel>()
+    private val viewModel by viewModel<AlbumListViewModel>()
+    private val rootViewModel by sharedViewModel<RootViewModel>()
 
     private val permissionRequest = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -33,17 +36,29 @@ class AlbumListFragment : Fragment(R.layout.fragment_music_directory_list) {
         viewModel.musicList.repeatCollectOnStarted(this) { list ->
             controller.setData(list.map { it.title })
         }
-        viewModel.event.repeatCollectOnStarted(this) {
-            if (context?.hasReadPermission() == true) {
-                viewModel.doScan()
-            } else {
-                permissionRequest.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+        viewModel.event.repeatCollectOnStarted(this) { event ->
+            when (event) {
+                is AlbumListEvent.RequestPermission -> requestPermissions()
+                is AlbumListEvent.NavigateToPlayer -> navigateToPlayer()
             }
         }
     }
 
+    private fun requestPermissions() {
+        if (context?.hasReadPermission() == true) {
+            viewModel.doScan()
+        } else {
+            permissionRequest.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+    }
+
+    private fun navigateToPlayer() {
+        rootViewModel.navigateToPlayer()
+    }
+
     private fun Context.hasReadPermission(): Boolean {
-        val result = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+        val result =
+            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
         return result == PackageManager.PERMISSION_GRANTED
     }
 }

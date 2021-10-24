@@ -2,6 +2,7 @@ package jp.riawithapps.riamusicplayer.ui.musicdirectorylist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import jp.riawithapps.riamusicplayer.ui.util.emit
 import jp.riawithapps.riamusicplayer.usecase.music.MusicFile
 import jp.riawithapps.riamusicplayer.usecase.musicdirectorylist.MusicListUseCase
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -9,7 +10,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 
-class MusicDirectoryListViewModel(
+class AlbumListViewModel(
     private val musicDirectoryListUseCase: MusicListUseCase,
 ) : ViewModel() {
     private val handler = CoroutineExceptionHandler { _, e -> e.printStackTrace() }
@@ -20,6 +21,10 @@ class MusicDirectoryListViewModel(
 
     private val _event = MutableSharedFlow<AlbumListEvent>()
     val event: SharedFlow<AlbumListEvent> = _event
+
+    fun onClickItem() {
+        _event.emit(scope, AlbumListEvent.NavigateToPlayer)
+    }
 
     fun onClickScan() {
         scope.launch {
@@ -36,4 +41,5 @@ class MusicDirectoryListViewModel(
 
 sealed class AlbumListEvent {
     object RequestPermission : AlbumListEvent()
+    object NavigateToPlayer : AlbumListEvent()
 }

@@ -5,13 +5,18 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import jp.riawithapps.riamusicplayer.ui.R
 import jp.riawithapps.riamusicplayer.ui.databinding.FragmentRootBinding
 import jp.riawithapps.riamusicplayer.ui.musicselect.MusicSelectFragment
 import jp.riawithapps.riamusicplayer.ui.search.SearchFragment
+import jp.riawithapps.riamusicplayer.ui.util.repeatCollectOnStarted
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class RootFragment : Fragment(R.layout.fragment_root) {
+    private val rootViewModel by sharedViewModel<RootViewModel>()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -33,6 +38,14 @@ class RootFragment : Fragment(R.layout.fragment_root) {
                     R.id.action_settings -> binding.viewpager.setCurrentItem(1, false)
                 }
                 true
+            }
+        }
+
+        rootViewModel.event.repeatCollectOnStarted(this) { event ->
+            when (event) {
+                is RootEvent.NavigateToPlayer -> {
+                    findNavController().navigate(RootFragmentDirections.actionToPlayer())
+                }
             }
         }
     }

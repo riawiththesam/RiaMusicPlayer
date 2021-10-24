@@ -12,11 +12,14 @@ import jp.riawithapps.riamusicplayer.ui.databinding.EpoxyMusicDirectoryBinding
 abstract class AlbumModel : EpoxyModelWithHolder<AlbumModel.Holder>() {
     @EpoxyAttribute
     var title: String = ""
+    @EpoxyAttribute
+    var onClick: () -> Unit = {}
 
     override fun getDefaultLayout(): Int = R.layout.epoxy_music_directory
 
     override fun bind(holder: Holder) {
         holder.binding.text.text = title
+        holder.binding.root.setOnClickListener { onClick() }
     }
 
     class Holder : EpoxyHolder() {

@@ -7,8 +7,18 @@
 
     <fragment
         android:id="@+id/FirstFragment"
-        android:name="jp.riawithapps.riamusicplayer.ui.RootFragment"
+        android:name="jp.riawithapps.riamusicplayer.ui.root.RootFragment"
         android:label="First"
         tools:layout="@layout/fragment_root">
+
+        <action
+            android:id="@+id/actionToPlayer"
+            app:destination="@id/PlayerFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/PlayerFragment"
+        android:name="jp.riawithapps.riamusicplayer.ui.player.PlayerFragment"
+        android:label="Player"
+        tools:layout="@layout/fragment_player" />
 </navigation>
