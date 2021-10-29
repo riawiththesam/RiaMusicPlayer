@@ -64,6 +64,10 @@ dependencies {
 
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
 
+    def exoplayer_version = "2.15.1"
+    implementation "com.google.android.exoplayer:exoplayer-core:$exoplayer_version"
+    implementation "androidx.media:media:1.4.3"
+
     testImplementation "junit:junit:${jUnitVersion}"
     androidTestImplementation "androidx.test.ext:junit:${androidJUnitVersion}"
     androidTestImplementation "androidx.test.espresso:espresso-core:${espressoVersion}"
