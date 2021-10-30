@@ -14,6 +14,7 @@ import android.support.v4.media.session.PlaybackStateCompat
 import androidx.core.app.NotificationCompat
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media.session.MediaButtonReceiver
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
@@ -54,10 +55,10 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
         mediaSessionCompat.setCallback(object : MediaSessionCompat.Callback() {
             override fun onPlayFromUri(uri: Uri?, extras: Bundle?) {
                 super.onPlayFromUri(uri, extras)
+                if (uri == null) return
                 val dataSource = DefaultDataSourceFactory(this@MusicPlayerService)
-                val mediaSource = ProgressiveMediaSource.Factory(dataSource).createMediaSource(
-                    uri ?: return
-                )
+                val mediaSource = ProgressiveMediaSource.Factory(dataSource)
+                    .createMediaSource(MediaItem.fromUri(uri))
                 exoPlayer.playWhenReady = true
                 exoPlayer.addMediaSource(mediaSource)
                 exoPlayer.prepare()
