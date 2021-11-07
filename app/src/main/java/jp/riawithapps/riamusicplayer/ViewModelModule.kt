@@ -9,5 +9,5 @@ import org.koin.dsl.module
 fun createViewModelModule() = module {
     viewModel { RootViewModel() }
     viewModel { AlbumListViewModel(get()) }
-    viewModel { PlayerViewModel() }
+    viewModel { PlayerViewModel(get()) }
 }

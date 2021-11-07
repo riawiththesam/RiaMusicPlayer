@@ -3,27 +3,25 @@ package jp.riawithapps.riamusicplayer.ui.player
 import android.support.v4.media.MediaMetadataCompat
 import androidx.lifecycle.ViewModel
 import jp.riawithapps.riamusicplayer.ui.util.createScope
-import jp.riawithapps.riamusicplayer.ui.util.emit
 import jp.riawithapps.riamusicplayer.ui.util.getDuration
 import jp.riawithapps.riamusicplayer.ui.util.getTitle
-import kotlinx.coroutines.flow.MutableStateFlow
+import jp.riawithapps.riamusicplayer.usecase.player.PlayerMetaData
+import jp.riawithapps.riamusicplayer.usecase.player.PlayerUseCase
+import kotlinx.coroutines.flow.launchIn
 
-class PlayerViewModel : ViewModel() {
+class PlayerViewModel(
+    private val playerUseCase: PlayerUseCase,
+) : ViewModel() {
     private val scope = createScope()
-
-    val metaData = MutableStateFlow(PlayerMetaData("", ""))
+    val metaData = playerUseCase.metaData
 
     fun onMetaDataChanged(next: MediaMetadataCompat) {
-        metaData.emit(scope, PlayerMetaData(next))
+        playerUseCase.setMetaData(next.toPlayerMetadata())
+            .launchIn(scope)
     }
 }
 
-data class PlayerMetaData(
-    val title: String,
-    val duration: String,
-) {
-    constructor(meta: MediaMetadataCompat) : this(
-        title = meta.getTitle().toString(),
-        duration = meta.getDuration().toString(),
-    )
-}
+private fun MediaMetadataCompat.toPlayerMetadata() = PlayerMetaData(
+    title = this.getTitle().toString(),
+    duration = this.getDuration(),
+)
