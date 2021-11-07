@@ -4,7 +4,6 @@ import android.content.ComponentName
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.session.MediaControllerCompat
-import android.support.v4.media.session.PlaybackStateCompat
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -26,12 +25,9 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
 
     private val connectionCallbacks = object : MediaBrowserCompat.ConnectionCallback() {
         override fun onConnected() {
-            val mediaController = MediaControllerCompat(context, mediaBrowser.sessionToken)
-            mediaController.registerCallback(controllerCallback)
-
             MediaControllerCompat.setMediaController(
                 requireActivity(),
-                mediaController,
+                MediaControllerCompat(context, mediaBrowser.sessionToken),
             )
 
             // 接続したので、曲リストを購読します。ここでparentIdを渡しています。
@@ -48,18 +44,6 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
                 args.id.getUri(),
                 args.id.toBundle(),
             )
-        }
-    }
-
-    private val controllerCallback = object : MediaControllerCompat.Callback() {
-        // 追加
-        override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
-            when (state?.state) {
-                PlaybackStateCompat.STATE_PLAYING -> {
-                }
-                else -> {
-                }
-            }
         }
     }
 
@@ -90,7 +74,6 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
 
             override fun onStop(owner: LifecycleOwner) {
                 super.onStop(owner)
-                MediaControllerCompat.getMediaController(requireActivity())?.unregisterCallback(controllerCallback)
                 mediaBrowser.disconnect()
             }
         })
