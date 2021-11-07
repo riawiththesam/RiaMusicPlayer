@@ -18,7 +18,14 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
     private val args by navArgs<PlayerFragmentArgs>()
     private val playerViewModel by viewModel<PlayerViewModel>()
 
-    lateinit var mediaBrowser: MediaBrowserCompat
+    private val mediaBrowser: MediaBrowserCompat by lazy {
+        MediaBrowserCompat(
+            requireContext(),
+            ComponentName(requireContext(), MusicPlayerService::class.java),
+            connectionCallbacks,
+            null,
+        )
+    }
 
     private val connectionCallbacks = object : MediaBrowserCompat.ConnectionCallback() {
         override fun onConnected() {
@@ -27,7 +34,6 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
                 MediaControllerCompat(context, mediaBrowser.sessionToken),
             )
 
-            // 接続したので、曲リストを購読します。ここでparentIdを渡しています。
             mediaBrowser.subscribe(mediaBrowser.root, subscriptionCallback)
         }
     }
@@ -49,13 +55,6 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
 
         FragmentPlayerBinding.bind(view)
             .bind(this, playerViewModel)
-
-        mediaBrowser = MediaBrowserCompat(
-            requireContext(),
-            ComponentName(requireContext(), MusicPlayerService::class.java),
-            connectionCallbacks,
-            null // optional Bundle
-        )
 
         lifecycle.addObserver(object : DefaultLifecycleObserver {
             override fun onStart(owner: LifecycleOwner) {
