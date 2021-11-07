@@ -3,6 +3,7 @@ package jp.riawithapps.riamusicplayer.ui.service
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -21,6 +22,8 @@ import jp.riawithapps.riamusicplayer.ui.R
 import jp.riawithapps.riamusicplayer.ui.util.createCoroutineScope
 import jp.riawithapps.riamusicplayer.ui.util.setExoPlayerMetaData
 import jp.riawithapps.riamusicplayer.ui.util.setExoPlayerState
+import jp.riawithapps.riamusicplayer.usecase.music.MusicId
+import jp.riawithapps.riamusicplayer.usecase.music.toMusicId
 import jp.riawithapps.riamusicplayer.usecase.player.PlayerMetaData
 import jp.riawithapps.riamusicplayer.usecase.player.PlayerUseCase
 import kotlinx.coroutines.flow.launchIn
@@ -50,9 +53,9 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
         mediaSessionCompat.setCallback(object : MediaSessionCompat.Callback() {
             override fun onPlayFromUri(uri: Uri?, extras: Bundle?) {
                 super.onPlayFromUri(uri, extras)
-                if (uri == null) return
+                val musicId = extras?.toMusicId() ?: return
                 exoPlayer?.release()
-                exoPlayer = createPlayer(uri, mediaSessionCompat)
+                exoPlayer = createPlayer(musicId, mediaSessionCompat)
             }
 
             override fun onPause() {
@@ -126,7 +129,7 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
         startForeground(84, createNotification(this, mediaSessionCompat.sessionToken, exoPlayer.isPlaying))
     }
 
-    private fun createPlayer(uri: Uri, mediaSessionCompat: MediaSessionCompat): ExoPlayer {
+    private fun createPlayer(musicId: MusicId, mediaSessionCompat: MediaSessionCompat): ExoPlayer {
         return SimpleExoPlayer.Builder(this@MusicPlayerService)
             .build()
             .also { exoPlayer ->
@@ -153,7 +156,14 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
                 exoPlayer.playWhenReady = true
                 val dataSource = DefaultDataSourceFactory(this@MusicPlayerService)
                 val mediaSource = ProgressiveMediaSource.Factory(dataSource)
-                    .createMediaSource(MediaItem.fromUri(uri))
+                    .createMediaSource(
+                        MediaItem.fromUri(
+                            ContentUris.withAppendedId(
+                                musicId.getUri(),
+                                musicId.rawValue
+                            )
+                        )
+                    )
                 exoPlayer.addMediaSource(mediaSource)
                 exoPlayer.prepare()
             }
