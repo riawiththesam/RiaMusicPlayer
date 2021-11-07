@@ -14,6 +14,7 @@ import jp.riawithapps.riamusicplayer.ui.R
 import jp.riawithapps.riamusicplayer.ui.databinding.FragmentPlayerBinding
 import jp.riawithapps.riamusicplayer.ui.service.MusicPlayerService
 import jp.riawithapps.riamusicplayer.ui.util.repeatCollectOnStarted
+import jp.riawithapps.riamusicplayer.usecase.player.PlayerData
 import jp.riawithapps.riamusicplayer.usecase.player.PlayerMetaData
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -66,9 +67,12 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentPlayerBinding.bind(view)
-        playerViewModel.metaData.repeatCollectOnStarted(this) { meta ->
-            binding.infoTitle.text = meta.title
-            binding.seekBarDuration.text = meta.getDurationText()
+        playerViewModel.metaData.repeatCollectOnStarted(this) { metaData ->
+            binding.infoTitle.text = metaData.title
+            binding.seekBarDuration.text = metaData.getDurationText()
+        }
+        playerViewModel.playerData.repeatCollectOnStarted(this) { playerData ->
+            binding.seekBarCurrentTime.text = playerData.getCurrentTimeText()
         }
 
         mediaBrowser = MediaBrowserCompat(
@@ -94,3 +98,5 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
 }
 
 private fun PlayerMetaData.getDurationText() = this.duration.toString()
+
+private fun PlayerData.getCurrentTimeText() = this.currentTime.toString()

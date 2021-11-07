@@ -8,5 +8,5 @@ import org.koin.dsl.module
 
 fun createUseCaseModule() = module {
     single<MusicListUseCase> { MusicDirectoryListInteractor(get()) }
-    single<PlayerUseCase> { PlayerInteractor() }
+    single<PlayerUseCase> { PlayerInteractor(get()) }
 }

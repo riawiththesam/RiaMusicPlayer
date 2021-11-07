@@ -7,4 +7,5 @@ class PlayerViewModel(
     playerUseCase: PlayerUseCase,
 ) : ViewModel() {
     val metaData = playerUseCase.metaData
+    val playerData = playerUseCase.playerData
 }
