@@ -57,6 +57,22 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
                 exoPlayer.addMediaSource(mediaSource)
                 exoPlayer.prepare()
             }
+
+            override fun onPause() {
+                super.onPause()
+                exoPlayer.pause()
+            }
+
+            override fun onPlay() {
+                super.onPlay()
+                exoPlayer.play()
+            }
+
+            override fun onStop() {
+                super.onStop()
+                exoPlayer.stop()
+                stopSelf()
+            }
         })
 
         // ExoPlayerの再生状態が更新されたときも通知を更新する
