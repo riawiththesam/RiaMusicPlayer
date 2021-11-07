@@ -135,7 +135,7 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
      *
      * MediaSessionのsetCallBackで扱う操作([MediaSessionCompat.Callback.onPlay]など)も[PlaybackStateCompat.Builder.setState]に書かないと何も起きない
      * */
-    private fun updateState() {
+    private fun updateState(exoPlayer: ExoPlayer) {
         val stateBuilder = PlaybackStateCompat.Builder().apply {
             // 取り扱う操作。とりあえず 再生準備 再生 一時停止 シーク を扱うようにする。書き忘れると何も起きない
             setActions(
@@ -147,9 +147,9 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
             )
             // 再生してるか。ExoPlayerを参照
             val state =
-                if (exoPlayer?.isPlaying == true) PlaybackStateCompat.STATE_PLAYING else PlaybackStateCompat.STATE_PAUSED
+                if (exoPlayer.isPlaying) PlaybackStateCompat.STATE_PLAYING else PlaybackStateCompat.STATE_PAUSED
             // 位置
-            val position = exoPlayer?.currentPosition ?: 0
+            val position = exoPlayer.currentPosition
             // 再生状態を更新
             setState(state, position, 1.0f) // 最後は再生速度
         }.build()
@@ -161,17 +161,17 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
             putString(MediaMetadataCompat.METADATA_KEY_ARTIST, "音楽のアーティスト")
             putLong(
                 MediaMetadataCompat.METADATA_KEY_DURATION,
-                exoPlayer?.duration ?: 0
+                exoPlayer.duration
             ) // これあるとAndroid 10でシーク使えます
         }.build()
 
-        playerUseCase.setMetaData(PlayerMetaData("音楽のタイトル", exoPlayer?.duration ?: 0)).launchIn(scope)
+        playerUseCase.setMetaData(PlayerMetaData("音楽のタイトル", exoPlayer.duration)).launchIn(scope)
 
         mediaSessionCompat.setMetadata(mediaMetadataCompat)
     }
 
     /** 通知を表示する */
-    private fun showNotification() {
+    private fun showNotification(exoPlayer: ExoPlayer) {
         // 通知を作成。通知チャンネルのせいで長い
         val notification = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // 通知チャンネル
@@ -193,7 +193,7 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
             )
             setSmallIcon(R.drawable.ic_play_arrow_black_24dp)
             // 通知領域に置くボタン
-            if (exoPlayer?.isPlaying == true) {
+            if (exoPlayer.isPlaying) {
                 addAction(
                     NotificationCompat.Action(
                         R.drawable.ic_outline_pause_24,
@@ -234,9 +234,9 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
     private fun createPlayer(): ExoPlayer {
         return SimpleExoPlayer.Builder(this@MusicPlayerService)
             .build()
-            .apply {
+            .also { exoPlayer ->
                 // ExoPlayerの再生状態が更新されたときも通知を更新する
-                addListener(object : Player.Listener {
+                exoPlayer.addListener(object : Player.Listener {
                     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
                         when (playbackState) {
                             Player.STATE_READY -> {
@@ -248,8 +248,8 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
                             else -> {
                             }
                         }
-                        updateState()
-                        showNotification()
+                        updateState(exoPlayer)
+                        showNotification(exoPlayer)
                     }
                 })
             }
