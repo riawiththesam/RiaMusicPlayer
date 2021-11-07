@@ -18,11 +18,9 @@ import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import jp.riawithapps.riamusicplayer.ui.R
+import jp.riawithapps.riamusicplayer.ui.util.createCoroutineScope
 import jp.riawithapps.riamusicplayer.usecase.player.PlayerMetaData
 import jp.riawithapps.riamusicplayer.usecase.player.PlayerUseCase
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.launchIn
 import org.koin.android.ext.android.inject
 
@@ -33,9 +31,7 @@ private const val ROOT_RECENT = "root_recent"
 private const val ROOT = "root"
 
 class MusicPlayerService : MediaBrowserServiceCompat() {
-    private val job = SupervisorJob()
-    private val exceptionHandler = CoroutineExceptionHandler { _, e -> e.printStackTrace() }
-    private val scope = CoroutineScope(job + exceptionHandler)
+    private val scope = createCoroutineScope()
 
     private val playerUseCase by inject<PlayerUseCase>()
 
