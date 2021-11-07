@@ -37,14 +37,12 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
 
     private val playerUseCase by inject<PlayerUseCase>()
 
-    private lateinit var mediaSessionCompat: MediaSessionCompat
-
     private lateinit var onDestroyFunc: () -> Unit
 
     override fun onCreate() {
         super.onCreate()
 
-        mediaSessionCompat = MediaSessionCompat(this, "media_session")
+        val mediaSessionCompat = MediaSessionCompat(this, "media_session")
         sessionToken = mediaSessionCompat.sessionToken
 
         var exoPlayer: ExoPlayer? = null
@@ -54,7 +52,7 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
                 super.onPlayFromUri(uri, extras)
                 if (uri == null) return
                 exoPlayer?.release()
-                exoPlayer = createPlayer(uri)
+                exoPlayer = createPlayer(uri, mediaSessionCompat)
             }
 
             override fun onPause() {
@@ -123,12 +121,12 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
     }
 
     /** 通知を表示する */
-    private fun showNotification(exoPlayer: ExoPlayer) {
+    private fun showNotification(exoPlayer: ExoPlayer, mediaSessionCompat: MediaSessionCompat) {
         // 通知表示
         startForeground(84, createNotification(this, mediaSessionCompat.sessionToken, exoPlayer.isPlaying))
     }
 
-    private fun createPlayer(uri: Uri): ExoPlayer {
+    private fun createPlayer(uri: Uri, mediaSessionCompat: MediaSessionCompat): ExoPlayer {
         return SimpleExoPlayer.Builder(this@MusicPlayerService)
             .build()
             .also { exoPlayer ->
@@ -148,7 +146,7 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
                         mediaSessionCompat.setExoPlayerState(exoPlayer)
                         mediaSessionCompat.setExoPlayerMetaData(exoPlayer)
                         playerUseCase.setMetaData(PlayerMetaData("音楽のタイトル", exoPlayer.duration)).launchIn(scope)
-                        showNotification(exoPlayer)
+                        showNotification(exoPlayer, mediaSessionCompat)
                     }
                 })
 
