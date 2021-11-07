@@ -1,5 +1,6 @@
 package jp.riawithapps.riamusicplayer.ui.service
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -35,15 +36,11 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
 
     private val playerUseCase by inject<PlayerUseCase>()
 
-    private lateinit var notificationManager: NotificationManager
     private var exoPlayer: ExoPlayer? = null
     private lateinit var mediaSessionCompat: MediaSessionCompat
 
     override fun onCreate() {
         super.onCreate()
-
-        // 通知出すのに使う
-        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         // MediaSession用意
         mediaSessionCompat = MediaSessionCompat(this, "media_session")
@@ -156,13 +153,12 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
         mediaSessionCompat.setPlaybackState(stateBuilder)
         // メタデータの設定
         val mediaMetadataCompat = MediaMetadataCompat.Builder().apply {
-            // Android 11 の MediaSession で使われるやつ
             putString(MediaMetadataCompat.METADATA_KEY_TITLE, "音楽のタイトル")
             putString(MediaMetadataCompat.METADATA_KEY_ARTIST, "音楽のアーティスト")
             putLong(
                 MediaMetadataCompat.METADATA_KEY_DURATION,
                 exoPlayer.duration
-            ) // これあるとAndroid 10でシーク使えます
+            )
         }.build()
 
         playerUseCase.setMetaData(PlayerMetaData("音楽のタイトル", exoPlayer.duration)).launchIn(scope)
@@ -172,63 +168,8 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
 
     /** 通知を表示する */
     private fun showNotification(exoPlayer: ExoPlayer) {
-        // 通知を作成。通知チャンネルのせいで長い
-        val notification = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // 通知チャンネル
-            val channelId = "playlist_play"
-            val notificationChannel =
-                NotificationChannel(channelId, "音楽コントローラー", NotificationManager.IMPORTANCE_LOW)
-            if (notificationManager.getNotificationChannel(channelId) == null) {
-                // 登録
-                notificationManager.createNotificationChannel(notificationChannel)
-            }
-            NotificationCompat.Builder(this, channelId)
-        } else {
-            NotificationCompat.Builder(this)
-        }
-        notification.apply {
-            setStyle(
-                androidx.media.app.NotificationCompat.MediaStyle()
-                    .setMediaSession(mediaSessionCompat.sessionToken).setShowActionsInCompactView(0)
-            )
-            setSmallIcon(R.drawable.ic_play_arrow_black_24dp)
-            // 通知領域に置くボタン
-            if (exoPlayer.isPlaying) {
-                addAction(
-                    NotificationCompat.Action(
-                        R.drawable.ic_outline_pause_24,
-                        "一時停止",
-                        MediaButtonReceiver.buildMediaButtonPendingIntent(
-                            this@MusicPlayerService,
-                            PlaybackStateCompat.ACTION_PAUSE
-                        )
-                    )
-                )
-            } else {
-                addAction(
-                    NotificationCompat.Action(
-                        R.drawable.ic_play_arrow_black_24dp,
-                        "再生",
-                        MediaButtonReceiver.buildMediaButtonPendingIntent(
-                            this@MusicPlayerService,
-                            PlaybackStateCompat.ACTION_PLAY
-                        )
-                    )
-                )
-            }
-            addAction(
-                NotificationCompat.Action(
-                    R.drawable.ic_outline_stop_24,
-                    "停止",
-                    MediaButtonReceiver.buildMediaButtonPendingIntent(
-                        this@MusicPlayerService,
-                        PlaybackStateCompat.ACTION_STOP
-                    )
-                )
-            )
-        }
         // 通知表示
-        startForeground(84, notification.build())
+        startForeground(84, createNotification(this, mediaSessionCompat.sessionToken, exoPlayer.isPlaying))
     }
 
     private fun createPlayer(): ExoPlayer {
@@ -254,4 +195,69 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
                 })
             }
     }
+}
+
+@Suppress("deprecation")
+private fun createNotification(
+    context: Context,
+    sessionToken: MediaSessionCompat.Token,
+    isPlaying: Boolean,
+): Notification {
+    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+    // 通知を作成。通知チャンネルのせいで長い
+    val notification = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        // 通知チャンネル
+        val channelId = "playlist_play"
+        val notificationChannel =
+            NotificationChannel(channelId, "音楽コントローラー", NotificationManager.IMPORTANCE_LOW)
+        if (notificationManager.getNotificationChannel(channelId) == null) {
+            // 登録
+            notificationManager.createNotificationChannel(notificationChannel)
+        }
+        NotificationCompat.Builder(context, channelId)
+    } else {
+        NotificationCompat.Builder(context)
+    }
+    return notification.apply {
+        setStyle(
+            androidx.media.app.NotificationCompat.MediaStyle()
+                .setMediaSession(sessionToken).setShowActionsInCompactView(0)
+        )
+        setSmallIcon(R.drawable.ic_play_arrow_black_24dp)
+        // 通知領域に置くボタン
+        if (isPlaying) {
+            addAction(
+                NotificationCompat.Action(
+                    R.drawable.ic_outline_pause_24,
+                    "一時停止",
+                    MediaButtonReceiver.buildMediaButtonPendingIntent(
+                        context,
+                        PlaybackStateCompat.ACTION_PAUSE
+                    )
+                )
+            )
+        } else {
+            addAction(
+                NotificationCompat.Action(
+                    R.drawable.ic_play_arrow_black_24dp,
+                    "再生",
+                    MediaButtonReceiver.buildMediaButtonPendingIntent(
+                        context,
+                        PlaybackStateCompat.ACTION_PLAY
+                    )
+                )
+            )
+        }
+        addAction(
+            NotificationCompat.Action(
+                R.drawable.ic_outline_stop_24,
+                "停止",
+                MediaButtonReceiver.buildMediaButtonPendingIntent(
+                    context,
+                    PlaybackStateCompat.ACTION_STOP
+                )
+            )
+        )
+    }.build()
 }
