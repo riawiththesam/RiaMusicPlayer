@@ -12,6 +12,7 @@ import androidx.navigation.fragment.navArgs
 import jp.riawithapps.riamusicplayer.ui.R
 import jp.riawithapps.riamusicplayer.ui.databinding.FragmentPlayerBinding
 import jp.riawithapps.riamusicplayer.ui.service.MusicPlayerService
+import jp.riawithapps.riamusicplayer.ui.util.repeatCollectOnStarted
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlayerFragment : Fragment(R.layout.fragment_player) {
@@ -56,6 +57,12 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         FragmentPlayerBinding.bind(view)
             .bind(this, playerViewModel)
 
+        playerViewModel.event.repeatCollectOnStarted(this) {
+            when (it) {
+                is PlayerEvent.Seek -> requestSeek(it)
+            }
+        }
+
         lifecycle.addObserver(object : DefaultLifecycleObserver {
             override fun onStart(owner: LifecycleOwner) {
                 super.onStart(owner)
@@ -67,5 +74,9 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
                 mediaBrowser.disconnect()
             }
         })
+    }
+
+    private fun requestSeek(event: PlayerEvent.Seek) {
+        MediaControllerCompat.getMediaController(requireActivity())?.transportControls?.seekTo(event.to.toMillis())
     }
 }

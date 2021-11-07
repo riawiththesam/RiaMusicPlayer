@@ -20,6 +20,8 @@ fun FragmentPlayerBinding.bind(fragment: Fragment, playerViewModel: PlayerViewMo
 
         override fun onStopTrackingTouch(seekBar: SeekBar?) {
             enableAutoProgress = true
+            val bar = seekBar ?: return
+            playerViewModel.onSeek(bar.progress / bar.max.toDouble())
         }
     })
 

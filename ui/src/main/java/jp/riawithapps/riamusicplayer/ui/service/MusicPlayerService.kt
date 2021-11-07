@@ -75,6 +75,11 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
                 exoPlayer?.stop()
                 stopSelf()
             }
+
+            override fun onSeekTo(pos: Long) {
+                super.onSeekTo(pos)
+                exoPlayer?.seekTo(pos)
+            }
         })
 
         val job = flow {
