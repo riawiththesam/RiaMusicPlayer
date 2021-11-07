@@ -20,6 +20,13 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import jp.riawithapps.riamusicplayer.ui.R
+import jp.riawithapps.riamusicplayer.usecase.player.PlayerMetaData
+import jp.riawithapps.riamusicplayer.usecase.player.PlayerUseCase
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.launchIn
+import org.koin.android.ext.android.inject
 
 /** onLoadChildrenでparentIdに入ってくる。Android 11のメディアの再開の場合はこの値 */
 private const val ROOT_RECENT = "root_recent"
@@ -28,6 +35,12 @@ private const val ROOT_RECENT = "root_recent"
 private const val ROOT = "root"
 
 class MusicPlayerService : MediaBrowserServiceCompat() {
+    private val job = SupervisorJob()
+    private val exceptionHandler = CoroutineExceptionHandler { _, e -> e.printStackTrace() }
+    private val scope = CoroutineScope(job + exceptionHandler)
+
+    private val playerUseCase by inject<PlayerUseCase>()
+
     private lateinit var notificationManager: NotificationManager
     private lateinit var exoPlayer: SimpleExoPlayer
     private lateinit var mediaSessionCompat: MediaSessionCompat
@@ -183,16 +196,18 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
         }.build()
         mediaSessionCompat.setPlaybackState(stateBuilder)
         // メタデータの設定
-        val duration = 288L // 再生時間
         val mediaMetadataCompat = MediaMetadataCompat.Builder().apply {
             // Android 11 の MediaSession で使われるやつ
             putString(MediaMetadataCompat.METADATA_KEY_TITLE, "音楽のタイトル")
             putString(MediaMetadataCompat.METADATA_KEY_ARTIST, "音楽のアーティスト")
             putLong(
                 MediaMetadataCompat.METADATA_KEY_DURATION,
-                duration * 1000
+                exoPlayer.duration
             ) // これあるとAndroid 10でシーク使えます
         }.build()
+
+        playerUseCase.setMetaData(PlayerMetaData("音楽のタイトル", exoPlayer.duration)).launchIn(scope)
+
         mediaSessionCompat.setMetadata(mediaMetadataCompat)
     }
 

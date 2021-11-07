@@ -61,11 +61,6 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
                 }
             }
         }
-
-        override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
-            super.onMetadataChanged(metadata)
-            if (metadata != null) playerViewModel.onMetaDataChanged(metadata)
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
