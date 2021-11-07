@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
-import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.core.app.NotificationCompat
@@ -20,6 +19,8 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import jp.riawithapps.riamusicplayer.ui.R
 import jp.riawithapps.riamusicplayer.ui.util.createCoroutineScope
+import jp.riawithapps.riamusicplayer.ui.util.setExoPlayerMetaData
+import jp.riawithapps.riamusicplayer.ui.util.setExoPlayerState
 import jp.riawithapps.riamusicplayer.usecase.player.PlayerMetaData
 import jp.riawithapps.riamusicplayer.usecase.player.PlayerUseCase
 import kotlinx.coroutines.flow.launchIn
@@ -121,45 +122,6 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
         }
     }
 
-    /**
-     * 再生状態とメタデータを設定する。今回はメタデータはハードコートする
-     *
-     * MediaSessionのsetCallBackで扱う操作([MediaSessionCompat.Callback.onPlay]など)も[PlaybackStateCompat.Builder.setState]に書かないと何も起きない
-     * */
-    private fun updateState(exoPlayer: ExoPlayer) {
-        val stateBuilder = PlaybackStateCompat.Builder().apply {
-            // 取り扱う操作。とりあえず 再生準備 再生 一時停止 シーク を扱うようにする。書き忘れると何も起きない
-            setActions(
-                PlaybackStateCompat.ACTION_PREPARE
-                        or PlaybackStateCompat.ACTION_PLAY
-                        or PlaybackStateCompat.ACTION_PAUSE
-                        or PlaybackStateCompat.ACTION_STOP
-                        or PlaybackStateCompat.ACTION_SEEK_TO
-            )
-            // 再生してるか。ExoPlayerを参照
-            val state =
-                if (exoPlayer.isPlaying) PlaybackStateCompat.STATE_PLAYING else PlaybackStateCompat.STATE_PAUSED
-            // 位置
-            val position = exoPlayer.currentPosition
-            // 再生状態を更新
-            setState(state, position, 1.0f) // 最後は再生速度
-        }.build()
-        mediaSessionCompat.setPlaybackState(stateBuilder)
-        // メタデータの設定
-        val mediaMetadataCompat = MediaMetadataCompat.Builder().apply {
-            putString(MediaMetadataCompat.METADATA_KEY_TITLE, "音楽のタイトル")
-            putString(MediaMetadataCompat.METADATA_KEY_ARTIST, "音楽のアーティスト")
-            putLong(
-                MediaMetadataCompat.METADATA_KEY_DURATION,
-                exoPlayer.duration
-            )
-        }.build()
-
-        playerUseCase.setMetaData(PlayerMetaData("音楽のタイトル", exoPlayer.duration)).launchIn(scope)
-
-        mediaSessionCompat.setMetadata(mediaMetadataCompat)
-    }
-
     /** 通知を表示する */
     private fun showNotification(exoPlayer: ExoPlayer) {
         // 通知表示
@@ -183,7 +145,9 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
                             else -> {
                             }
                         }
-                        updateState(exoPlayer)
+                        mediaSessionCompat.setExoPlayerState(exoPlayer)
+                        mediaSessionCompat.setExoPlayerMetaData(exoPlayer)
+                        playerUseCase.setMetaData(PlayerMetaData("音楽のタイトル", exoPlayer.duration)).launchIn(scope)
                         showNotification(exoPlayer)
                     }
                 })
