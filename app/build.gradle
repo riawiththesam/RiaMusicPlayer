@@ -40,6 +40,8 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
     implementation "io.insert-koin:koin-android:$koinVersion"
 
+    implementation 'com.jakewharton.threetenabp:threetenabp:1.3.1'
+
     implementation "com.google.android.material:material:$materialDesignVersion"
 
     testImplementation "junit:junit:${jUnitVersion}"
