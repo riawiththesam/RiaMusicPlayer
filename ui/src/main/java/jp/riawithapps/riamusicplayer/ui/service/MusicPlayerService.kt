@@ -24,11 +24,10 @@ import jp.riawithapps.riamusicplayer.usecase.music.MusicId
 import jp.riawithapps.riamusicplayer.usecase.music.toMusicId
 import jp.riawithapps.riamusicplayer.usecase.player.PlayerUseCase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 /** onLoadChildrenでparentIdに入ってくる。Android 11のメディアの再開の場合はこの値 */
@@ -82,7 +81,14 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
             }
         })
 
-        val job = flow {
+        scope.launch(Dispatchers.Main) {
+            playerUseCase.metaData.collect {
+                val player = exoPlayer ?: return@collect
+                mediaSessionCompat.setExoPlayerMetaData(player, it)
+            }
+        }
+
+        flow {
             while (true) {
                 val player = exoPlayer
                 if (player != null) {
@@ -95,7 +101,7 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
         }.launchIn(scope)
 
         onDestroyFunc = {
-            job.cancel()
+            scope.cancel()
             mediaSessionCompat.release()
             exoPlayer?.release()
             exoPlayer = null
@@ -167,7 +173,6 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
                             }
                         }
                         mediaSessionCompat.setExoPlayerState(exoPlayer)
-                        mediaSessionCompat.setExoPlayerMetaData(exoPlayer)
                         playerUseCase.setMetaData(
                             musicId,
                             exoPlayer.getDurationDuration(),
