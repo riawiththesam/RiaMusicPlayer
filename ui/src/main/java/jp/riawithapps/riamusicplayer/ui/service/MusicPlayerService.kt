@@ -52,18 +52,8 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
             override fun onPlayFromUri(uri: Uri?, extras: Bundle?) {
                 super.onPlayFromUri(uri, extras)
                 if (uri == null) return
-
                 exoPlayer?.release()
-
-                val dataSource = DefaultDataSourceFactory(this@MusicPlayerService)
-                val mediaSource = ProgressiveMediaSource.Factory(dataSource)
-                    .createMediaSource(MediaItem.fromUri(uri))
-
-                exoPlayer = createPlayer().apply {
-                    playWhenReady = true
-                    addMediaSource(mediaSource)
-                    prepare()
-                }
+                exoPlayer = createPlayer(uri)
             }
 
             override fun onPause() {
@@ -176,7 +166,7 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
         startForeground(84, createNotification(this, mediaSessionCompat.sessionToken, exoPlayer.isPlaying))
     }
 
-    private fun createPlayer(): ExoPlayer {
+    private fun createPlayer(uri: Uri): ExoPlayer {
         return SimpleExoPlayer.Builder(this@MusicPlayerService)
             .build()
             .also { exoPlayer ->
@@ -197,6 +187,13 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
                         showNotification(exoPlayer)
                     }
                 })
+
+                exoPlayer.playWhenReady = true
+                val dataSource = DefaultDataSourceFactory(this@MusicPlayerService)
+                val mediaSource = ProgressiveMediaSource.Factory(dataSource)
+                    .createMediaSource(MediaItem.fromUri(uri))
+                exoPlayer.addMediaSource(mediaSource)
+                exoPlayer.prepare()
             }
     }
 }
