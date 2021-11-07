@@ -36,17 +36,17 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
 
     private val playerUseCase by inject<PlayerUseCase>()
 
-    private var exoPlayer: ExoPlayer? = null
     private lateinit var mediaSessionCompat: MediaSessionCompat
+
+    private lateinit var onDestroyFunc: () -> Unit
 
     override fun onCreate() {
         super.onCreate()
 
-        // MediaSession用意
         mediaSessionCompat = MediaSessionCompat(this, "media_session")
-
-        // Set the session's token so that client activities can communicate with it.
         sessionToken = mediaSessionCompat.sessionToken
+
+        var exoPlayer: ExoPlayer? = null
 
         mediaSessionCompat.setCallback(object : MediaSessionCompat.Callback() {
             override fun onPlayFromUri(uri: Uri?, extras: Bundle?) {
@@ -82,13 +82,17 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
                 stopSelf()
             }
         })
+
+        onDestroyFunc = {
+            mediaSessionCompat.release()
+            exoPlayer?.release()
+            exoPlayer = null
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        mediaSessionCompat.release()
-        exoPlayer?.release()
-        exoPlayer = null
+        onDestroyFunc()
     }
 
     override fun onGetRoot(
