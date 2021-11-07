@@ -43,12 +43,6 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
         // MediaSession用意
         mediaSessionCompat = MediaSessionCompat(this, "media_session")
 
-        // Enable callbacks from MediaButtons and TransportControls
-        mediaSessionCompat.setFlags(
-            MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or
-                    MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
-        )
-
         // Set the session's token so that client activities can communicate with it.
         sessionToken = mediaSessionCompat.sessionToken
 
@@ -156,7 +150,13 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
     private fun updateState() {
         val stateBuilder = PlaybackStateCompat.Builder().apply {
             // 取り扱う操作。とりあえず 再生準備 再生 一時停止 シーク を扱うようにする。書き忘れると何も起きない
-            setActions(PlaybackStateCompat.ACTION_PREPARE or PlaybackStateCompat.ACTION_PLAY or PlaybackStateCompat.ACTION_PAUSE or PlaybackStateCompat.ACTION_STOP or PlaybackStateCompat.ACTION_SEEK_TO or PlaybackStateCompat.ACTION_STOP)
+            setActions(
+                PlaybackStateCompat.ACTION_PREPARE
+                        or PlaybackStateCompat.ACTION_PLAY
+                        or PlaybackStateCompat.ACTION_PAUSE
+                        or PlaybackStateCompat.ACTION_STOP
+                        or PlaybackStateCompat.ACTION_SEEK_TO
+            )
             // 再生してるか。ExoPlayerを参照
             val state =
                 if (exoPlayer.isPlaying) PlaybackStateCompat.STATE_PLAYING else PlaybackStateCompat.STATE_PAUSED
