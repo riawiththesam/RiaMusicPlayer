@@ -18,6 +18,8 @@ interface PlayerUseCase {
 
 data class PlayerMetaData(
     val title: String,
+    val albumTitle: String,
+    val artist: String,
     val duration: Duration,
 )
 
@@ -28,7 +30,7 @@ data class PlayerData(
 class PlayerInteractor(
     private val musicRepository: MusicRepository,
 ) : PlayerUseCase {
-    override val metaData = MutableStateFlow(PlayerMetaData("", Duration.ZERO))
+    override val metaData = MutableStateFlow(PlayerMetaData("", "", "", Duration.ZERO))
     override val playerData = MutableStateFlow(PlayerData(Duration.ZERO))
 
     override fun setMetaData(musicId: MusicId, duration: Duration) = singleUnitFlow {
@@ -36,6 +38,8 @@ class PlayerInteractor(
         val music = scanResult.musicList.firstOrNull { it.id == musicId } ?: return@singleUnitFlow
         metaData.value = PlayerMetaData(
             title = music.title,
+            albumTitle = music.albumTitle,
+            artist = music.artist,
             duration = duration,
         )
     }

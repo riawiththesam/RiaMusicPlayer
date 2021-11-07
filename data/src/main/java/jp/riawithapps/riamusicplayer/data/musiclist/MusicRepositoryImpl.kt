@@ -19,6 +19,7 @@ class MusicRepositoryImpl(
                 MediaStore.Audio.Media.TITLE,
                 MediaStore.Audio.Media.ALBUM,
                 MediaStore.Audio.Media.ALBUM_ID,
+                MediaStore.Audio.ArtistColumns.ARTIST,
                 MediaStore.Audio.Media._ID
             ).toTypedArray()
             val selectionMimeType = MediaStore.Files.FileColumns.MIME_TYPE + "=?"
@@ -35,13 +36,15 @@ class MusicRepositoryImpl(
                 val nameColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)
                 val albumColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)
                 val albumIdColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID)
+                val artistColumn = it.getColumnIndexOrThrow(MediaStore.Audio.ArtistColumns.ARTIST)
                 val idColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
                 while (it.moveToNext()) {
                     val title = it.getString(nameColumn)
                     val album = it.getString(albumColumn)
                     val albumId = it.getLong(albumIdColumn)
+                    val artist = it.getString(artistColumn)
                     val id = it.getLong(idColumn)
-                    list.add(MusicFile(MusicId(id), title))
+                    list.add(MusicFile(MusicId(id), title, album, artist))
                 }
             }
             MusicRepository.ScanResult(
