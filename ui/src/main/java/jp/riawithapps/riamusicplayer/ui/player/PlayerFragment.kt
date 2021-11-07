@@ -65,10 +65,5 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
                 mediaBrowser.disconnect()
             }
         })
-
-        MediaControllerCompat.getMediaController(requireActivity())?.transportControls?.playFromMediaId(
-            args.id.rawValue.toString(),
-            null
-        )
     }
 }
