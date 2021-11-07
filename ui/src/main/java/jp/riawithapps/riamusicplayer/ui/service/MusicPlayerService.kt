@@ -222,7 +222,7 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
             if (exoPlayer.isPlaying) {
                 addAction(
                     NotificationCompat.Action(
-                        R.drawable.ic_play_arrow_black_24dp,
+                        R.drawable.ic_outline_pause_24,
                         "一時停止",
                         MediaButtonReceiver.buildMediaButtonPendingIntent(
                             this@MusicPlayerService,
@@ -244,7 +244,7 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
             }
             addAction(
                 NotificationCompat.Action(
-                    R.drawable.ic_play_arrow_black_24dp,
+                    R.drawable.ic_outline_stop_24,
                     "停止",
                     MediaButtonReceiver.buildMediaButtonPendingIntent(
                         this@MusicPlayerService,
