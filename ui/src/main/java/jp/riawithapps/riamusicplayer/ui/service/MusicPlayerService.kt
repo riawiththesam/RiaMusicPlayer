@@ -14,9 +14,7 @@ import android.support.v4.media.session.PlaybackStateCompat
 import androidx.core.app.NotificationCompat
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media.session.MediaButtonReceiver
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import jp.riawithapps.riamusicplayer.ui.R
@@ -42,7 +40,7 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
     private val playerUseCase by inject<PlayerUseCase>()
 
     private lateinit var notificationManager: NotificationManager
-    private lateinit var exoPlayer: SimpleExoPlayer
+    private var exoPlayer: ExoPlayer? = null
     private lateinit var mediaSessionCompat: MediaSessionCompat
 
     override fun onCreate() {
@@ -50,8 +48,6 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
 
         // 通知出すのに使う
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        // ExoPlayer用意
-        exoPlayer = SimpleExoPlayer.Builder(this).build()
 
         // MediaSession用意
         mediaSessionCompat = MediaSessionCompat(this, "media_session")
@@ -63,46 +59,34 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
             override fun onPlayFromUri(uri: Uri?, extras: Bundle?) {
                 super.onPlayFromUri(uri, extras)
                 if (uri == null) return
+
+                exoPlayer?.release()
+
                 val dataSource = DefaultDataSourceFactory(this@MusicPlayerService)
                 val mediaSource = ProgressiveMediaSource.Factory(dataSource)
                     .createMediaSource(MediaItem.fromUri(uri))
-                exoPlayer.playWhenReady = true
-                exoPlayer.addMediaSource(mediaSource)
-                exoPlayer.prepare()
+
+                exoPlayer = createPlayer().apply {
+                    playWhenReady = true
+                    addMediaSource(mediaSource)
+                    prepare()
+                }
             }
 
             override fun onPause() {
                 super.onPause()
-                exoPlayer.pause()
+                exoPlayer?.pause()
             }
 
             override fun onPlay() {
                 super.onPlay()
-                exoPlayer.play()
+                exoPlayer?.play()
             }
 
             override fun onStop() {
                 super.onStop()
-                exoPlayer.stop()
+                exoPlayer?.stop()
                 stopSelf()
-            }
-        })
-
-        // ExoPlayerの再生状態が更新されたときも通知を更新する
-        exoPlayer.addListener(object : Player.Listener {
-            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-                when (playbackState) {
-                    Player.STATE_READY -> {
-                        startThisService()
-                    }
-                    Player.STATE_ENDED -> {
-                        stopSelf()
-                    }
-                    else -> {
-                    }
-                }
-                updateState()
-                showNotification()
             }
         })
     }
@@ -110,7 +94,8 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
     override fun onDestroy() {
         super.onDestroy()
         mediaSessionCompat.release()
-        exoPlayer.release()
+        exoPlayer?.release()
+        exoPlayer = null
     }
 
     override fun onGetRoot(
@@ -137,28 +122,6 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
             result.sendResult(mutableListOf())
         }
     }
-
-    /**
-     * [onLoadChildren]で返すアイテムを作成する
-     * */
-    /*
-    @Suppress("SameParameterValue")
-    private fun createMediaItem(
-        videoId: String,
-        title: String,
-        subTitle: String? = null,
-    ): MediaBrowserCompat.MediaItem {
-        val mediaDescriptionCompat = MediaDescriptionCompat.Builder().apply {
-            setTitle(title)
-            if (subTitle != null) setSubtitle(subTitle)
-            setMediaId(videoId)
-        }.build()
-        return MediaBrowserCompat.MediaItem(
-            mediaDescriptionCompat,
-            MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
-        )
-    }
-     */
 
     /** フォアグラウンドサービスを起動する */
     private fun startThisService() {
@@ -188,9 +151,9 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
             )
             // 再生してるか。ExoPlayerを参照
             val state =
-                if (exoPlayer.isPlaying) PlaybackStateCompat.STATE_PLAYING else PlaybackStateCompat.STATE_PAUSED
+                if (exoPlayer?.isPlaying == true) PlaybackStateCompat.STATE_PLAYING else PlaybackStateCompat.STATE_PAUSED
             // 位置
-            val position = exoPlayer.currentPosition
+            val position = exoPlayer?.currentPosition ?: 0
             // 再生状態を更新
             setState(state, position, 1.0f) // 最後は再生速度
         }.build()
@@ -202,11 +165,11 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
             putString(MediaMetadataCompat.METADATA_KEY_ARTIST, "音楽のアーティスト")
             putLong(
                 MediaMetadataCompat.METADATA_KEY_DURATION,
-                exoPlayer.duration
+                exoPlayer?.duration ?: 0
             ) // これあるとAndroid 10でシーク使えます
         }.build()
 
-        playerUseCase.setMetaData(PlayerMetaData("音楽のタイトル", exoPlayer.duration)).launchIn(scope)
+        playerUseCase.setMetaData(PlayerMetaData("音楽のタイトル", exoPlayer?.duration ?: 0)).launchIn(scope)
 
         mediaSessionCompat.setMetadata(mediaMetadataCompat)
     }
@@ -234,7 +197,7 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
             )
             setSmallIcon(R.drawable.ic_play_arrow_black_24dp)
             // 通知領域に置くボタン
-            if (exoPlayer.isPlaying) {
+            if (exoPlayer?.isPlaying == true) {
                 addAction(
                     NotificationCompat.Action(
                         R.drawable.ic_outline_pause_24,
@@ -270,5 +233,29 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
         }
         // 通知表示
         startForeground(84, notification.build())
+    }
+
+    private fun createPlayer(): ExoPlayer {
+        return SimpleExoPlayer.Builder(this@MusicPlayerService)
+            .build()
+            .apply {
+                // ExoPlayerの再生状態が更新されたときも通知を更新する
+                addListener(object : Player.Listener {
+                    override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+                        when (playbackState) {
+                            Player.STATE_READY -> {
+                                startThisService()
+                            }
+                            Player.STATE_ENDED -> {
+                                stopSelf()
+                            }
+                            else -> {
+                            }
+                        }
+                        updateState()
+                        showNotification()
+                    }
+                })
+            }
     }
 }
