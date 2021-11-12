@@ -13,8 +13,8 @@ interface PlayerUseCase {
 
     fun setMetaData(musicId: MusicId, duration: Duration): Flow<Unit>
     fun setPlayerData(currentTime: Duration): Flow<Unit>
-    fun pause(): Unit
-    fun play(): Unit
+    fun paused()
+    fun playing()
 }
 
 data class PlayerData(
@@ -62,11 +62,11 @@ class PlayerInteractor(
         playerData.value = playerData.value.copy(currentTime = currentTime)
     }
 
-    override fun pause() {
+    override fun paused() {
         playerData.value = playerData.value.copy(playbackState = PlaybackState.Paused)
     }
 
-    override fun play() {
+    override fun playing() {
         playerData.value = playerData.value.copy(playbackState = PlaybackState.Playing)
     }
 }

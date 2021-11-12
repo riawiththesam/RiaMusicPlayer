@@ -62,13 +62,11 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
             override fun onPause() {
                 super.onPause()
                 exoPlayer?.pause()
-                playerUseCase.pause()
             }
 
             override fun onPlay() {
                 super.onPlay()
                 exoPlayer?.play()
-                playerUseCase.play()
             }
 
             override fun onStop() {
@@ -180,6 +178,11 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
                             exoPlayer.getDurationDuration(),
                         ).launchIn(scope)
                         showNotification(exoPlayer, mediaSessionCompat)
+                    }
+
+                    override fun onIsPlayingChanged(isPlaying: Boolean) {
+                        super.onIsPlayingChanged(isPlaying)
+                        if (isPlaying) playerUseCase.playing() else playerUseCase.paused()
                     }
                 })
 
