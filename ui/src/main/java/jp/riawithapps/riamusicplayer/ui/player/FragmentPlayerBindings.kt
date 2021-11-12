@@ -3,7 +3,7 @@ package jp.riawithapps.riamusicplayer.ui.player
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import jp.riawithapps.riamusicplayer.ui.databinding.FragmentPlayerBinding
-import jp.riawithapps.riamusicplayer.ui.util.repeatCollectOnStarted
+import jp.riawithapps.riamusicplayer.ui.util.*
 import jp.riawithapps.riamusicplayer.usecase.player.PlayerData
 
 fun FragmentPlayerBinding.bind(fragment: Fragment, playerViewModel: PlayerViewModel) {
@@ -33,6 +33,6 @@ fun FragmentPlayerBinding.bind(fragment: Fragment, playerViewModel: PlayerViewMo
     }
 }
 
-private fun PlayerData.getDurationText() = this.duration.toString()
+private fun PlayerData.getDurationText() = duration.getPatternFunction()(duration)
 
-private fun PlayerData.getCurrentTimeText() = this.currentTime.toString()
+private fun PlayerData.getCurrentTimeText() = duration.getPatternFunction()(currentTime)
