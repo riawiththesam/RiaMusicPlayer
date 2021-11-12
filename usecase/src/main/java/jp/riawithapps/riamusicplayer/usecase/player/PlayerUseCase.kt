@@ -13,6 +13,8 @@ interface PlayerUseCase {
 
     fun setMetaData(musicId: MusicId, duration: Duration): Flow<Unit>
     fun setPlayerData(currentTime: Duration): Flow<Unit>
+    fun pause(): Unit
+    fun play(): Unit
 }
 
 data class PlayerData(
@@ -21,6 +23,7 @@ data class PlayerData(
     val artist: String,
     val duration: Duration,
     val currentTime: Duration,
+    val playbackState: PlaybackState,
 ) {
     companion object {
         val EMPTY = PlayerData(
@@ -29,8 +32,14 @@ data class PlayerData(
             "",
             Duration.ZERO,
             Duration.ZERO,
+            PlaybackState.Paused,
         )
     }
+}
+
+sealed class PlaybackState {
+    object Paused : PlaybackState()
+    object Playing : PlaybackState()
 }
 
 class PlayerInteractor(
@@ -51,6 +60,14 @@ class PlayerInteractor(
 
     override fun setPlayerData(currentTime: Duration) = singleUnitFlow {
         playerData.value = playerData.value.copy(currentTime = currentTime)
+    }
+
+    override fun pause() {
+        playerData.value = playerData.value.copy(playbackState = PlaybackState.Paused)
+    }
+
+    override fun play() {
+        playerData.value = playerData.value.copy(playbackState = PlaybackState.Playing)
     }
 }
 
