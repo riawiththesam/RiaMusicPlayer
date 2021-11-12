@@ -50,7 +50,7 @@ class PlayerInteractor(
     override fun setMetaData(musicId: MusicId, duration: Duration) = singleUnitFlow {
         val scanResult = musicRepository.scan()
         val music = scanResult.musicList.firstOrNull { it.id == musicId } ?: return@singleUnitFlow
-        playerData.value = PlayerData.EMPTY.copy(
+        playerData.value = playerData.value.copy(
             title = music.title,
             albumTitle = music.albumTitle,
             artist = music.artist,
