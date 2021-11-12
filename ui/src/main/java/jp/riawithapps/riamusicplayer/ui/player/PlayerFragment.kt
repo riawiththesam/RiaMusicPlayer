@@ -83,8 +83,10 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
     }
 
     private fun requestPause() {
+        MediaControllerCompat.getMediaController(requireActivity())?.transportControls?.pause()
     }
 
     private fun requestPlay() {
+        MediaControllerCompat.getMediaController(requireActivity())?.transportControls?.play()
     }
 }

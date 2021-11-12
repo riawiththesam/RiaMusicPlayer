@@ -62,11 +62,13 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
             override fun onPause() {
                 super.onPause()
                 exoPlayer?.pause()
+                playerUseCase.pause()
             }
 
             override fun onPlay() {
                 super.onPlay()
                 exoPlayer?.play()
+                playerUseCase.play()
             }
 
             override fun onStop() {
