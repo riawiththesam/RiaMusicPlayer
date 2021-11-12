@@ -25,12 +25,16 @@ class PlayerViewModel(
     }
 
     fun onClickPause() {
+        _event.emit(scope, PlayerEvent.Pause)
     }
 
     fun onClickPlay() {
+        _event.emit(scope, PlayerEvent.Play)
     }
 }
 
 sealed class PlayerEvent {
     class Seek(val to: Duration) : PlayerEvent()
+    object Pause: PlayerEvent()
+    object Play: PlayerEvent()
 }

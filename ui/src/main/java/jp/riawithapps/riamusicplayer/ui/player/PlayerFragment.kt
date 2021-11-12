@@ -60,6 +60,8 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         playerViewModel.event.repeatCollectOnStarted(this) {
             when (it) {
                 is PlayerEvent.Seek -> requestSeek(it)
+                is PlayerEvent.Pause -> requestPause()
+                is PlayerEvent.Play -> requestPlay()
             }
         }
 
@@ -78,5 +80,11 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
 
     private fun requestSeek(event: PlayerEvent.Seek) {
         MediaControllerCompat.getMediaController(requireActivity())?.transportControls?.seekTo(event.to.toMillis())
+    }
+
+    private fun requestPause() {
+    }
+
+    private fun requestPlay() {
     }
 }
