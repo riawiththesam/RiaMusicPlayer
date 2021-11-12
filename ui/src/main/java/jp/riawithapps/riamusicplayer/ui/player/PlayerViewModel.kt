@@ -13,14 +13,13 @@ class PlayerViewModel(
     playerUseCase: PlayerUseCase,
 ) : ViewModel() {
     private val scope = createScope()
-    val metaData = playerUseCase.metaData
     val playerData = playerUseCase.playerData
 
     private val _event = MutableSharedFlow<PlayerEvent>()
     val event: SharedFlow<PlayerEvent> = _event
 
     fun onSeek(ratio: Double) {
-        val durationMillis = metaData.value.duration.toMillis()
+        val durationMillis = playerData.value.duration.toMillis()
         val to = Duration.ofMillis((durationMillis * ratio).roundToLong())
         _event.emit(scope, PlayerEvent.Seek(to))
     }

@@ -4,7 +4,7 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import com.google.android.exoplayer2.ExoPlayer
-import jp.riawithapps.riamusicplayer.usecase.player.PlayerMetaData
+import jp.riawithapps.riamusicplayer.usecase.player.PlayerData
 
 /**
  * プレイヤーの状態をMediaSessionに設定
@@ -36,10 +36,10 @@ fun MediaSessionCompat.setExoPlayerState(exoPlayer: ExoPlayer) {
  *
  * @param exoPlayer
  */
-fun MediaSessionCompat.setExoPlayerMetaData(exoPlayer: ExoPlayer, metaData: PlayerMetaData) {
+fun MediaSessionCompat.setExoPlayerMetaData(exoPlayer: ExoPlayer, playerData: PlayerData) {
     val mediaMetadataCompat = MediaMetadataCompat.Builder().apply {
-        putString(MediaMetadataCompat.METADATA_KEY_TITLE, metaData.title)
-        putString(MediaMetadataCompat.METADATA_KEY_ARTIST, metaData.artist)
+        putString(MediaMetadataCompat.METADATA_KEY_TITLE, playerData.title)
+        putString(MediaMetadataCompat.METADATA_KEY_ARTIST, playerData.artist)
         putLong(
             MediaMetadataCompat.METADATA_KEY_DURATION,
             exoPlayer.duration

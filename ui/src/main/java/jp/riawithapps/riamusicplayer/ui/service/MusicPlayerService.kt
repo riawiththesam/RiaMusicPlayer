@@ -82,7 +82,7 @@ class MusicPlayerService : MediaBrowserServiceCompat() {
         })
 
         scope.launch(Dispatchers.Main) {
-            playerUseCase.metaData.collect {
+            playerUseCase.playerData.collect {
                 val player = exoPlayer ?: return@collect
                 mediaSessionCompat.setExoPlayerMetaData(player, it)
             }
