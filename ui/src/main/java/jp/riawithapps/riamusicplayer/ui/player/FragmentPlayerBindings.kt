@@ -24,6 +24,9 @@ fun FragmentPlayerBinding.bind(fragment: Fragment, playerViewModel: PlayerViewMo
         }
     })
 
+    this.mainControlPlay.setOnClickListener { playerViewModel.onClickPlay() }
+    this.mainControlPause.setOnClickListener { playerViewModel.onClickPause() }
+
     playerViewModel.playerData.repeatCollectOnStarted(fragment) { playerData ->
         this.infoTitle.text = playerData.title
         this.seekBarDuration.text = playerData.getDurationText()

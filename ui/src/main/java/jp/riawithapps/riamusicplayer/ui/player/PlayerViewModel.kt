@@ -23,6 +23,12 @@ class PlayerViewModel(
         val to = Duration.ofMillis((durationMillis * ratio).roundToLong())
         _event.emit(scope, PlayerEvent.Seek(to))
     }
+
+    fun onClickPause() {
+    }
+
+    fun onClickPlay() {
+    }
 }
 
 sealed class PlayerEvent {
